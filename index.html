@@ -1,6 +1,6 @@
 <title>VÖR Design</title>
-<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=Poppins:wght@200;300;400;500&display=swap">
@@ -29,7 +29,7 @@
   --maxw: 1280px;
   --pad: clamp(20px, 5vw, 64px);
 
-  --t-hero:  clamp(2.15rem, 4.4vw, 4rem);
+  --t-hero:  clamp(1.95rem, 4.4vw, 4rem);
   --t-h2:    clamp(1.9rem, 3.6vw, 3.1rem);
   --t-h3:    clamp(1.15rem, 1.6vw, 1.45rem);
   --t-body:  clamp(.95rem, 1.05vw, 1.05rem);
@@ -177,7 +177,9 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
   width:100%; max-width:var(--maxw); margin-inline:auto; padding-inline:var(--pad);
   display:flex; justify-content:flex-end;
 }
-.hero__block{ max-width:790px; text-align:right; will-change:transform, opacity; }
+/* min-width:0 — sin esto el flex item no se encoge por debajo de su contenido
+   y el titular se desborda del viewport en pantallas chicas */
+.hero__block{ max-width:790px; min-width:0; text-align:right; will-change:transform, opacity; }
 .hero h1{
   font-size:var(--t-hero); font-weight:900; letter-spacing:-.035em;
   margin:16px 0 20px; color:var(--bone);
@@ -460,6 +462,9 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
   .hero__block{ text-align:left; }
   .hero__sub{ margin-left:0; }
   .hero__cta{ justify-content:flex-start; }
+  .eyebrow{ letter-spacing:.16em; }
+  .hero__sub{ max-width:100%; }
+  .btn{ padding:13px 20px; font-size:.68rem; letter-spacing:.13em; }
   .hero__bg::after{ background:linear-gradient(to top, rgba(6,6,6,.90) 4%, rgba(6,6,6,.28) 52%, rgba(6,6,6,.55) 100%), var(--texture-ov); background-size:auto, 18px 10px; }
   .hdr.is-pill .search{ width:120px; }
 }
