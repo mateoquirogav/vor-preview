@@ -35,7 +35,10 @@
 
   --ease: cubic-bezier(.22,.9,.28,1);
 
+  /* textura opaca: para secciones sin foto */
   --texture: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='10'%3E%3Crect width='18' height='10' fill='%230B0B0B'/%3E%3Crect x='0' y='2.5' width='7' height='2' rx='1' fill='%231C1C1C'/%3E%3Crect x='9' y='7.5' width='7' height='2' rx='1' fill='%231C1C1C'/%3E%3C/svg%3E");
+  /* textura transparente: para ir ENCIMA de una foto sin taparla */
+  --texture-ov: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='10'%3E%3Crect x='0' y='2.5' width='7' height='2' rx='1' fill='%23000' opacity='.34'/%3E%3Crect x='9' y='7.5' width='7' height='2' rx='1' fill='%23000' opacity='.34'/%3E%3C/svg%3E");
 }
 
 *{ box-sizing:border-box; }
@@ -158,15 +161,14 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
   padding-block:180px 76px; overflow:hidden; background:var(--ink);
 }
 .hero__bg{ position:absolute; inset:0; z-index:0; }
-.hero__bg img{ width:100%; height:100%; object-fit:cover; object-position:center 62%; }
+.hero__bg img{ width:100%; height:100%; object-fit:cover; object-position:center 58%; }
 .hero__bg::after{
   content:""; position:absolute; inset:0;
   background:
-    linear-gradient(to top,   rgba(6,6,6,.92) 4%, rgba(6,6,6,.30) 46%, rgba(6,6,6,.55) 100%),
-    linear-gradient(to right, rgba(6,6,6,.10) 30%, rgba(6,6,6,.80) 100%),
-    var(--texture);
+    linear-gradient(to top,   rgba(6,6,6,.86) 0%, rgba(6,6,6,.20) 40%, rgba(6,6,6,.00) 62%, rgba(6,6,6,.46) 100%),
+    linear-gradient(to right, rgba(6,6,6,.00) 26%, rgba(6,6,6,.34) 58%, rgba(6,6,6,.72) 100%),
+    var(--texture-ov);
   background-size:auto, auto, 18px 10px;
-  opacity:1;
 }
 .hero__inner{
   position:relative; z-index:2;
@@ -252,6 +254,12 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
   transition:transform 1.1s var(--ease), filter .5s var(--ease);
   filter:saturate(.94) brightness(.96);
 }
+/* vela superior: garantiza que el número se lea sobre fotos claras */
+.cat__art::before{
+  content:""; position:absolute; inset:0 0 auto 0; height:38%; z-index:1;
+  background:linear-gradient(to bottom, rgba(6,6,6,.62), transparent);
+  pointer-events:none;
+}
 .cat:hover .cat__art{ border-color:var(--line-gold); transform:translateY(-6px); }
 .cat:hover .cat__art img{ transform:scale(1.07); filter:saturate(1.06) brightness(1.04); }
 .cat__num{
@@ -280,7 +288,7 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
   border-color:var(--line-gold);
 }
 .panel__art{ position:absolute; inset:0; }
-.panel__art img{ width:100%; height:100%; object-fit:cover; transition:transform 1.2s var(--ease); }
+.panel__art img{ width:100%; height:100%; object-fit:cover; object-position:center 38%; transition:transform 1.2s var(--ease); }
 .panel:hover .panel__art img{ transform:scale(1.05); }
 .panel__scrim{ position:absolute; inset:0; background:linear-gradient(to top, rgba(6,6,6,.95) 8%, rgba(6,6,6,.45) 48%, rgba(6,6,6,.10) 82%); }
 .panel__body{ position:relative; padding:clamp(26px,3.4vw,44px); width:100%; }
@@ -342,7 +350,7 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
 .closer__bg img{ width:100%; height:100%; object-fit:cover; }
 .closer__bg::after{
   content:""; position:absolute; inset:0;
-  background:linear-gradient(to top, rgba(6,6,6,.94), rgba(6,6,6,.72) 55%, rgba(6,6,6,.88)), var(--texture);
+  background:linear-gradient(to top, rgba(6,6,6,.90), rgba(6,6,6,.62) 55%, rgba(6,6,6,.84)), var(--texture-ov);
   background-size:auto, 18px 10px;
 }
 .closer .wrap{ position:relative; z-index:2; }
@@ -359,6 +367,7 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
 .ftr{ background:var(--graphite); border-top:1px solid var(--line); padding-block:64px 32px; position:relative; }
 .ftr__top{ display:grid; grid-template-columns:1.4fr 2.2fr auto; gap:clamp(28px,5vw,64px); align-items:start; }
 .ftr h4{ font-size:.68rem; font-weight:800; letter-spacing:.24em; text-transform:uppercase; color:var(--stone); margin-bottom:16px; }
+.cols h4{ min-height:2.4em; }
 .news{ display:flex; border-bottom:1px solid var(--line); max-width:330px; }
 .news input{
   flex:1; background:none; border:0; outline:none; color:var(--bone);
@@ -449,7 +458,7 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; 
   .hero__block{ text-align:left; }
   .hero__sub{ margin-left:0; }
   .hero__cta{ justify-content:flex-start; }
-  .hero__bg::after{ background:linear-gradient(to top, rgba(6,6,6,.94) 6%, rgba(6,6,6,.42) 52%, rgba(6,6,6,.62) 100%), var(--texture); background-size:auto, 18px 10px; }
+  .hero__bg::after{ background:linear-gradient(to top, rgba(6,6,6,.90) 4%, rgba(6,6,6,.28) 52%, rgba(6,6,6,.55) 100%), var(--texture-ov); background-size:auto, 18px 10px; }
   .hdr.is-pill .search{ width:120px; }
 }
 @media (max-width:520px){
