@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Aro Calado · VÖR Design</title>
+<meta name="description" content="Aro Calado: porta servilletas impreso en 3D, en sets de 2 a 12, con tus iniciales grabadas.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap">
+<style>
+/* Presentación oscura (grafito) que enmarca la ficha clara (hueso) dentro de un dispositivo.
+   La ficha usa container queries: el mismo código se ve PC o celular según el marco. */
+:root{
+  --grafito:#171717; --grafito-2:#222120; --hueso:#F3F0E9; --hueso-2:#EAE5DA; --piedra:#B7B1A7;
+  --tinta:#171717; --suave:#6B665E; --linea:#DDD6C9; --verde:#1D3A34; --esmeralda:#2E6B5C;
+  --pres-txt:#F3F0E9; --pres-suave:#A39E94; --pres-linea:rgba(243,240,233,.12);
+  --f-tit:"Montserrat",system-ui,sans-serif; --f-txt:"Inter",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--grafito);color:var(--pres-txt);font-family:var(--f-txt);margin:0;-webkit-font-smoothing:antialiased}
+.pres{max-width:1320px;margin:0 auto;padding-inline:clamp(16px,3vw,40px);padding-block:clamp(28px,5vw,64px) 80px}
+.pres-cab{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:28px}
+.pres-cab .k{font:600 11px/1 var(--f-tit);letter-spacing:.32em;text-transform:uppercase;color:var(--pres-suave);margin:0 0 14px}
+.pres-cab h1{font:800 clamp(34px,5vw,64px)/.98 var(--f-tit);letter-spacing:-.035em;margin:0;text-wrap:balance}
+.pres-cab p{max-width:52ch;color:var(--pres-suave);font-size:15px;line-height:1.6;margin:14px 0 0}
+.seg{display:inline-flex;border:1px solid var(--pres-linea);border-radius:999px;padding:4px;gap:4px}
+.seg button{font:600 12px/1 var(--f-tit);letter-spacing:.08em;text-transform:uppercase;color:var(--pres-suave);background:none;border:0;border-radius:999px;padding:11px 18px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--hueso);color:var(--tinta)}
+.seg button:focus-visible,.pdp button:focus-visible,.pdp input:focus-visible,.pdp summary:focus-visible{outline:2px solid var(--esmeralda);outline-offset:2px}
+.lienzo{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;align-items:start}
+@media (max-width:1100px){.lienzo{grid-template-columns:minmax(0,1fr)}}
+.marco{margin-inline:auto;width:100%;transition:max-width .5s cubic-bezier(.22,.9,.28,1)}
+.marco[data-modo="cel"]{max-width:392px}
+.disp{border-radius:14px;overflow:hidden;background:var(--hueso);box-shadow:0 40px 90px -40px rgba(0,0,0,.9),0 0 0 1px rgba(243,240,233,.08)}
+.marco[data-modo="cel"] .disp{border-radius:38px;box-shadow:0 0 0 10px #0d0d0d,0 0 0 11px rgba(243,240,233,.14),0 40px 90px -30px rgba(0,0,0,.9)}
+.barra-nav{display:flex;align-items:center;gap:8px;padding:11px 14px;background:#ECE7DD;border-bottom:1px solid var(--linea)}
+.barra-nav i{width:10px;height:10px;border-radius:50%;background:#D3CCBF}
+.barra-nav span{flex:1;margin-left:10px;font-size:12px;color:var(--suave);background:var(--hueso);border-radius:999px;padding:6px 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.marco[data-modo="cel"] .barra-nav i{display:none}
+.vista{height:min(78vh,860px);overflow-y:auto;overflow-x:hidden;position:relative;container-type:inline-size;container-name:pdp;scrollbar-width:thin}
+.marco[data-modo="cel"] .vista{height:min(76vh,760px)}
+
+/* ───────── notas de presentación ───────── */
+.notas{position:sticky;top:24px;display:grid;gap:10px}
+.notas h2{font:700 13px/1 var(--f-tit);letter-spacing:.2em;text-transform:uppercase;color:var(--pres-suave);margin:0 0 6px}
+.nota{display:grid;grid-template-columns:28px minmax(0,1fr);gap:12px;padding:14px;border:1px solid var(--pres-linea);border-radius:10px;background:var(--grafito-2);cursor:pointer;text-align:left;color:inherit;font:inherit}
+.nota:hover,.nota.on{border-color:rgba(243,240,233,.38)}
+.nota b{font:700 14px/1.25 var(--f-tit);display:block;margin-bottom:4px}
+.nota small{font-size:12.5px;line-height:1.5;color:var(--pres-suave);display:block}
+.nota em{font-style:normal;color:#CFE3DB}
+.num{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 12px/1 var(--f-tit);background:var(--hueso);color:var(--tinta);font-variant-numeric:tabular-nums}
+.leyenda{font-size:12px;color:var(--pres-suave);line-height:1.5;margin:6px 2px 0}
+.ph{font:600 .86em/1 var(--f-txt);letter-spacing:.02em;border:1px dashed currentColor;border-radius:4px;padding:2px 5px;opacity:.75;white-space:nowrap}
+
+/* ───────── FICHA (tema Río + motor) ───────── */
+.pdp{background:var(--hueso);color:var(--tinta);font-family:var(--f-txt)}
+.pdp img{display:block;max-width:100%}
+.pdp .marca-n{position:absolute;z-index:3;margin:-10px 0 0 -10px}
+.pin{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--verde);color:var(--hueso);font:700 11px/1 var(--f-tit);box-shadow:0 0 0 4px rgba(29,58,52,.18);transition:transform .3s}
+.pin.on{transform:scale(1.25);box-shadow:0 0 0 7px rgba(29,58,52,.25)}
+.sin-pins .pin{display:none}
+.cab{position:sticky;top:0;z-index:20;padding:10px 14px}
+.pil{display:flex;align-items:center;gap:18px;max-width:1080px;margin:0 auto;padding:10px 20px;border-radius:999px;background:rgba(243,240,233,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 16px 34px -22px rgba(0,0,0,.45),inset 0 0 0 1px rgba(23,23,23,.06)}
+.pil img{height:30px;width:auto}
+.pil nav{display:flex;gap:20px;font-size:13px}
+.pil .der{margin-left:auto;display:flex;gap:16px;align-items:center}
+.ico{width:20px;height:20px;stroke:var(--tinta);fill:none;stroke-width:1.5}
+.migas{max-width:1180px;margin:14px auto 0;padding:0 24px;font-size:12px;color:var(--suave)}
+.top{max-width:1180px;margin:0 auto;padding:18px 24px 56px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:48px;align-items:start}
+.gal{position:sticky;top:84px;display:grid;grid-template-columns:64px minmax(0,1fr);gap:14px}
+.miniat{display:grid;gap:10px;align-content:start}
+.miniat button{padding:0;border:1px solid transparent;border-radius:8px;overflow:hidden;background:#fff;cursor:pointer;aspect-ratio:3/4}
+.miniat button img{width:100%;height:100%;object-fit:cover}
+.miniat button[aria-current="true"]{border-color:var(--tinta)}
+.foto{position:relative;border-radius:14px;overflow:hidden;background:#fff;aspect-ratio:3/4}
+.foto img{width:100%;height:100%;object-fit:cover;transition:opacity .45s}
+.foto img.cont{object-fit:contain;padding:12%;background:#fff}
+.comp{display:grid;gap:22px}
+.comp .k{font:600 11px/1 var(--f-tit);letter-spacing:.28em;text-transform:uppercase;color:var(--suave)}
+.comp h1{font:800 clamp(30px,3.4vw,44px)/1.02 var(--f-tit);letter-spacing:-.03em;margin:0;text-wrap:balance}
+.comp .baj{font-size:15.5px;line-height:1.6;color:#3d3a35;margin:0;max-width:44ch}
+.precio{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.precio strong{font:700 30px/1 var(--f-tit);letter-spacing:-.02em}
+.precio span{font-size:13px;color:var(--suave)}
+.opt{display:grid;gap:10px}
+.opt-t{display:flex;justify-content:space-between;font:600 12px/1 var(--f-tit);letter-spacing:.14em;text-transform:uppercase}
+.opt-t em{font:400 13px/1 var(--f-txt);letter-spacing:0;text-transform:none;font-style:normal;color:var(--suave)}
+.sw{display:flex;gap:10px;flex-wrap:wrap}
+.sw button{width:38px;height:38px;border-radius:50%;border:0;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12);outline-offset:3px}
+.sw button[aria-pressed="true"]{outline:1.5px solid var(--tinta)}
+.cal{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.cal button{background:#fff;border:1px solid var(--linea);border-radius:10px;padding:6px;cursor:pointer;aspect-ratio:1}
+.cal button img{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
+.cal button[aria-pressed="true"]{border-color:var(--tinta);box-shadow:inset 0 0 0 1px var(--tinta)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{font:500 13px/1 var(--f-txt);padding:11px 15px;border-radius:999px;border:1px solid var(--linea);background:transparent;color:var(--tinta);cursor:pointer;font-variant-numeric:tabular-nums}
+.chips button[aria-pressed="true"]{background:var(--tinta);color:var(--hueso);border-color:var(--tinta)}
+.grab{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;padding:14px;border:1px solid var(--linea);border-radius:12px;background:rgba(255,255,255,.45)}
+.grab label{font-size:14px}
+.grab input[type=text]{grid-column:1/-1;width:100%;font:600 18px/1 var(--f-tit);letter-spacing:.3em;text-transform:uppercase;padding:12px 14px;border:1px solid var(--linea);border-radius:8px;background:var(--hueso);color:var(--tinta)}
+.grab input[type=text]:disabled{opacity:.45}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;font:700 13px/1 var(--f-tit);letter-spacing:.2em;text-transform:uppercase;padding:19px;border-radius:999px;border:0;background:var(--tinta);color:var(--hueso);cursor:pointer}
+.btn.sec{background:transparent;color:var(--tinta);box-shadow:inset 0 0 0 1px var(--tinta)}
+.sellos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;font-size:12px;line-height:1.4;color:#3d3a35}
+.sellos div{display:grid;gap:6px;justify-items:start}
+.acc{border-top:1px solid var(--linea)}
+.acc details{border-bottom:1px solid var(--linea)}
+.acc summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;padding:16px 0;font:600 14px/1.2 var(--f-tit)}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary::after{content:"+";font-weight:400;font-size:20px;line-height:.8}
+.acc details[open] summary::after{content:"–"}
+.acc p{margin:0 0 16px;font-size:14px;line-height:1.65;color:#3d3a35}
+
+/* historia (va en la descripción) */
+.cap{max-width:1180px;margin:0 auto;padding:clamp(56px,8cqi,110px) 24px}
+.cap .k{font:600 11px/1 var(--f-tit);letter-spacing:.3em;text-transform:uppercase;color:var(--suave);margin:0 0 18px}
+.cap h2{font:800 clamp(30px,5.2cqi,66px)/1 var(--f-tit);letter-spacing:-.04em;margin:0;text-wrap:balance;max-width:16ch}
+.cap .p{font-size:16px;line-height:1.7;color:#3d3a35;max-width:52ch;margin:20px 0 0}
+.apertura{background:var(--grafito);color:var(--hueso);max-width:none}
+.apertura .in{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:end}
+.apertura .k{color:var(--piedra)} .apertura .p{color:#CFC9BF}
+.apertura .cita{font:300 clamp(20px,2.6cqi,30px)/1.35 var(--f-tit);color:var(--hueso);margin:0;border-left:1px solid rgba(243,240,233,.25);padding-left:22px}
+
+.trazo{height:260cqi;max-height:2400px;min-height:1500px;position:relative;background:var(--hueso)}
+.trazo-in{position:sticky;top:70px;max-width:1180px;margin:0 auto;padding:24px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:56px;align-items:center}
+.lamina{position:relative;aspect-ratio:3/4;border-radius:14px;overflow:hidden;background:#fff;max-height:calc(100vh - 140px)}
+.lamina img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.lamina .color{clip-path:inset(var(--corte,100%) 0 0 0)}
+.lamina .filo{position:absolute;left:0;right:0;height:1px;background:var(--hueso);top:var(--corte,100%);box-shadow:0 0 18px 2px rgba(243,240,233,.9);opacity:var(--filo,0)}
+.pasos{display:grid;gap:26px}
+.paso{display:grid;grid-template-columns:44px minmax(0,1fr);gap:16px;opacity:.28;transition:opacity .5s}
+.paso.on{opacity:1}
+.paso .n{font:700 13px/1 var(--f-tit);color:var(--suave);padding-top:6px;font-variant-numeric:tabular-nums}
+.paso b{font:800 clamp(22px,3cqi,34px)/1.05 var(--f-tit);letter-spacing:-.03em;display:block}
+.paso p{margin:8px 0 0;font-size:15px;line-height:1.6;color:#3d3a35}
+
+.serie{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:clamp(8px,2cqi,24px);margin-top:48px}
+.serie button{background:none;border:0;padding:0;cursor:pointer;text-align:left;color:inherit;font:inherit}
+.serie .img{aspect-ratio:4/5;display:grid;place-items:center}
+.serie img{width:82%;mix-blend-mode:multiply}
+.serie b{font:700 15px/1.2 var(--f-tit);display:block;margin-top:10px}
+.serie small{font-size:12.5px;color:var(--suave);line-height:1.45;display:block;margin-top:3px}
+.serie button[aria-pressed="true"] b{text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1.5px}
+
+.puntos{background:#fff}
+.obj{position:relative;max-width:620px;margin:48px auto 0}
+.obj img{width:100%;mix-blend-mode:multiply}
+.obj .pt{position:absolute;left:var(--x);top:var(--y)}
+.obj .pt i{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--verde);box-shadow:0 0 0 0 rgba(29,58,52,.45);animation:late 2.4s infinite}
+.obj .pt .l{position:absolute;width:1px;background:var(--tinta);left:0;transform-origin:top}
+.obj .pt.up .l{bottom:6px;height:var(--h)} .obj .pt.dn .l{top:6px;height:var(--h)}
+.obj .pt .r{position:absolute;left:0;transform:translateX(-50%);width:max-content;max-width:170px;text-align:center}
+.obj .pt.up .r{bottom:calc(var(--h) + 12px)} .obj .pt.dn .r{top:calc(var(--h) + 12px)}
+.obj .pt .r b{font:700 13px/1.2 var(--f-tit);display:block}
+.obj .pt .r small{font-size:12px;color:var(--suave);line-height:1.35;display:block;margin-top:2px}
+@keyframes late{0%{box-shadow:0 0 0 0 rgba(29,58,52,.45)}70%{box-shadow:0 0 0 12px rgba(29,58,52,0)}100%{box-shadow:0 0 0 0 rgba(29,58,52,0)}}
+
+.firma{background:var(--hueso-2)}
+.firma .in{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:center}
+.banda{width:100%;height:auto;display:block}
+.firma .ctl{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.firma input{flex:1 1 160px;min-width:0;font:600 18px/1 var(--f-tit);letter-spacing:.3em;text-transform:uppercase;padding:14px 16px;border:1px solid var(--linea);border-radius:8px;background:var(--hueso);color:var(--tinta)}
+.alto{font-size:13px;color:var(--suave);margin-top:12px;font-variant-numeric:tabular-nums}
+.alto input{width:180px;vertical-align:middle;accent-color:var(--verde)}
+
+.mesa .in{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:56px;align-items:center}
+.tabla{background:#fff;border-radius:16px;aspect-ratio:16/10;position:relative;box-shadow:inset 0 0 0 1px var(--linea);display:grid;place-items:center;padding:6%}
+.lugares{display:grid;gap:clamp(6px,1.5cqi,16px);width:100%;justify-items:center;align-content:center}
+.lugares img{width:100%;max-width:74px;mix-blend-mode:multiply;transition:opacity .3s,transform .3s}
+.total{display:flex;align-items:baseline;gap:12px;margin-top:22px;flex-wrap:wrap}
+.total strong{font:700 24px/1 var(--f-tit)}
+
+.faq{max-width:780px}
+.faq .acc{margin-top:28px}
+.pie{background:var(--grafito);color:var(--hueso);padding:48px 24px;display:flex;justify-content:center}
+.pie img{height:46px;filter:invert(1) sepia(.15) brightness(.97)}
+
+.fija{position:sticky;bottom:0;z-index:15;display:flex;align-items:center;gap:14px;padding:12px 18px;background:rgba(243,240,233,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--linea);transform:translateY(110%);transition:transform .45s cubic-bezier(.22,.9,.28,1)}
+.fija.on{transform:none}
+.fija img{width:44px;height:44px;object-fit:contain;background:#fff;border-radius:8px;mix-blend-mode:multiply}
+.fija .t{min-width:0;flex:1}
+.fija .t b{font:700 14px/1.2 var(--f-tit);display:block}
+.fija .t small{font-size:12px;color:var(--suave);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.fija .btn{width:auto;padding:15px 22px;font-size:11px}
+
+/* más comercial */
+.lema{font:300 clamp(18px,2cqi,22px)/1.3 var(--f-tit);color:#3d3a35;margin:10px 0 0}
+.clave{list-style:none;margin:0;padding:0;display:grid;gap:9px;font-size:14.5px}
+.clave li{display:grid;grid-template-columns:18px minmax(0,1fr);gap:10px;align-items:start}
+.clave li::before{content:"";width:14px;height:8px;margin-top:4px;border-left:1.6px solid var(--esmeralda);border-bottom:1.6px solid var(--esmeralda);transform:rotate(-45deg)}
+.precio-box{display:grid;gap:8px;padding:16px 0;border-top:1px solid var(--linea);border-bottom:1px solid var(--linea)}
+.precio-sub{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--suave)}
+.compra{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px}
+.cant{display:flex;align-items:center;border:1px solid var(--linea);border-radius:999px;overflow:hidden}
+.cant button{width:42px;height:54px;border:0;background:none;font-size:18px;cursor:pointer;color:var(--tinta)}
+.cant output{min-width:22px;text-align:center;font:600 15px/1 var(--f-tit);font-variant-numeric:tabular-nums}
+.envio{display:flex;gap:10px;align-items:center;font-size:13px;color:#3d3a35;margin:0}
+.regalo{display:grid;grid-template-columns:22px minmax(0,1fr);gap:12px;padding:14px;border-radius:12px;background:var(--hueso-2)}
+.regalo b{font:700 14px/1.2 var(--f-tit);display:block;margin-bottom:3px}
+.regalo span{font-size:13px;color:#3d3a35;line-height:1.5}
+.mom{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:clamp(10px,2cqi,22px);margin-top:44px}
+.mom figure{margin:0;display:grid;gap:12px;align-content:start}
+.mom img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:12px;background:#fff}
+.mom img.cont{object-fit:contain;padding:14%}
+.mom figure:first-child img{aspect-ratio:auto;height:100%;max-height:640px}
+.mom b{font:700 16px/1.2 var(--f-tit);display:block}
+.mom span{font-size:13.5px;color:#3d3a35;line-height:1.5;display:block;margin-top:4px}
+.completa{border-top:1px solid var(--linea)}
+.cruz{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(10px,2cqi,20px);margin-top:36px}
+.cruz a{color:inherit;text-decoration:none;display:grid;gap:8px}
+.cruz img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:10px}
+.cruz b{font:700 14px/1.25 var(--f-tit)}
+.cruz .ph{justify-self:start;font-size:12px}
+.cierre-c{background:var(--grafito);color:var(--hueso);max-width:none}
+.cierre-c .in{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:40px;align-items:end}
+.cierre-c .k{color:var(--piedra)} .cierre-c .p{color:#CFC9BF}
+.cierre-cta{display:grid;gap:14px}
+.cierre-cta strong{font:700 30px/1 var(--f-tit)}
+.cierre-cta small{font-size:12px;color:var(--piedra)}
+.btn.claro{background:var(--hueso);color:var(--tinta)}
+
+/* celular: el mismo código, el marco de 390 */
+@container pdp (max-width:700px){
+  .pil nav{display:none} .pil{padding:9px 16px} .pil img{height:26px}
+  .top{grid-template-columns:minmax(0,1fr);gap:26px;padding:12px 16px 40px}
+  .gal{position:relative;top:0;grid-template-columns:minmax(0,1fr)}
+  .miniat{grid-auto-flow:column;grid-auto-columns:56px;order:2;overflow-x:auto}
+  .cal{grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+  .sellos{grid-template-columns:minmax(0,1fr)}
+  .sellos div{grid-template-columns:22px minmax(0,1fr);align-items:center}
+  .cap{padding:56px 16px}
+  .apertura .in,.firma .in,.mesa .in{grid-template-columns:minmax(0,1fr);gap:28px}
+  .trazo{height:2000px}
+  .trazo-in{grid-template-columns:minmax(0,1fr);gap:18px;padding:12px 16px;top:64px}
+  .lamina{aspect-ratio:4/5;max-height:52vh}
+  .pasos{gap:12px}
+  .paso{grid-template-columns:30px minmax(0,1fr)}
+  .paso p{font-size:13.5px}
+  .serie{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:22px}
+  .obj{margin-top:80px;margin-bottom:60px}
+  .obj .pt .r{max-width:110px} .obj .pt .r small{display:none}
+  .migas{padding:0 16px}
+  .mom{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .mom figure:first-child{grid-column:1/-1}
+  .mom figure:first-child img{aspect-ratio:4/5;height:auto}
+  .cruz{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cierre-c .in{grid-template-columns:minmax(0,1fr);gap:24px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<style>
+html,body{background:var(--hueso);color:var(--tinta)}
+body{color-scheme:light}
+.pagina{container-type:inline-size;container-name:pdp;min-height:100vh}
+.pdp .cab{top:0}
+.pdp .gal{top:84px}
+.trazo-in{top:84px}
+.lamina{max-height:calc(100vh - 140px)}
+.aviso{background:var(--grafito);color:var(--piedra);font:500 12px/1.4 var(--f-txt);text-align:center;padding:8px 16px;letter-spacing:.02em}
+</style>
+</head><body>
+<div class="aviso">Vista previa de PRAXIS · los datos entre corchetes se completan con VÖR antes de publicar</div>
+<main class="pagina">
+<div class="pdp sin-pins" id="pdp">
+
+            <div class="cab"><div class="pil">
+              <a href="../../" aria-label="Volver al inicio"><img src="logo.webp" alt="VÖR Design"></a>
+              <nav><span>Mesa</span><span>Cocina</span><span>Pet Design</span><span>Colecciones</span></nav>
+              <div class="der">
+                <svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+                <svg class="ico" viewBox="0 0 24 24"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8a3 3 0 016 0"/></svg>
+              </div>
+            </div></div>
+
+            <div class="migas"><a href="../../" style="color:inherit">Inicio</a> / Mesa / Porta servilletas</div>
+
+            <section class="top">
+              <div class="gal">
+                <span class="marca-n"><span class="pin" data-n="1">1</span></span>
+                <div class="miniat" id="miniat"></div>
+                <div class="foto"><img id="foto" src="escena.webp" alt="Aro Calado verde con servilleta de lino sobre mesa de mármol"></div>
+              </div>
+
+              <div class="comp">
+                <div>
+                  <p class="k">Mesa · Porta servilletas</p>
+                  <h1>Aro Calado</h1>
+                  <p class="lema">La servilleta, con firma.</p>
+                </div>
+                <ul class="clave">
+                  <li>Sets de 2 a 12 personas, todos del mismo lote</li>
+                  <li>Tus iniciales grabadas en cada aro</li>
+                  <li>6 calados · 5 colores · 4 mm de espesor</li>
+                </ul>
+                <div class="precio-box">
+                  <div class="precio"><span class="pin" data-n="5">5</span><strong><span class="ph">[PRECIO]</span></strong><span id="p-set">set para 4</span></div>
+                  <div class="precio-sub"><span><span class="ph">[$ POR PERSONA]</span> por persona</span><span><span class="ph">[CUOTAS SIN INTERÉS]</span></span></div>
+                </div>
+
+                <div class="opt">
+                  <div class="opt-t"><span><span class="pin" data-n="2">2</span> Color</span><em id="t-color">Natural</em></div>
+                  <div class="sw" id="sw"></div>
+                </div>
+                <div class="opt">
+                  <div class="opt-t"><span><span class="pin" data-n="3">3</span> Calado</span><em id="t-cal">Rombo</em></div>
+                  <div class="cal" id="cal"></div>
+                </div>
+                <div class="opt">
+                  <div class="opt-t"><span><span class="pin" data-n="4">4</span> Set para</span><em id="t-set">4 personas</em></div>
+                  <div class="chips" id="sets"></div>
+                </div>
+                <div class="grab">
+                  <input type="checkbox" id="g-on">
+                  <label for="g-on"><span class="pin" data-n="6">6</span> Grabar iniciales <span style="color:var(--suave)">· 6 a 10 mm</span></label>
+                  <input type="text" id="g-txt" maxlength="3" placeholder="M Q" disabled aria-label="Iniciales para grabar">
+                </div>
+                <div class="compra">
+                  <div class="cant" role="group" aria-label="Cantidad de sets"><button id="c-menos" aria-label="Uno menos">−</button><output id="c-n">1</output><button id="c-mas" aria-label="Uno más">+</button></div>
+                  <button class="btn" id="comprar">Agregar al carrito</button>
+                </div>
+                <button class="btn sec" id="ahora">Comprar ahora</button>
+                <p class="envio"><svg class="ico" viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/></svg><span>Envío a todo el país · <span class="ph">[CONFIRMAR PLAZOS]</span></span></p>
+                <div class="regalo"><svg class="ico" viewBox="0 0 24 24"><path d="M4 11h16v9H4zM3 7h18v4H3zM12 7v13M12 7c-2-4-6-3-5 0M12 7c2-4 6-3 5 0"/></svg><div><b>Para regalar</b><span>Un set con iniciales es un regalo que se nota elegido. Presentación de regalo: <span class="ph">[CONFIRMAR]</span></span></div></div>
+                <div class="sellos">
+                  <div><svg class="ico" viewBox="0 0 24 24"><path d="M12 3c4 3 6 6 6 9a6 6 0 01-12 0c0-3 2-6 6-9z"/></svg>Filamento biodegradable de origen vegetal</div>
+                  <div><svg class="ico" viewBox="0 0 24 24"><path d="M4 18L18 4M14 4h4v4M7 20h13"/></svg>Diseñado e impreso por VÖR</div>
+                  <div><svg class="ico" viewBox="0 0 24 24"><path d="M5 19l3-1 10-10-2-2L6 16z"/><path d="M14 6l2 2"/></svg>Tu firma, grabada en la pieza</div>
+                </div>
+                <div class="acc">
+                  <details open><summary>Descripción</summary><p>Cada aro sale de un trazo dibujado a mano y se imprime capa sobre capa hasta tener 4 mm de espesor. El calado deja pasar la luz y marca la servilleta con una sombra propia. Se vende en sets para 2, 4, 6, 8 o 12 personas.</p></details>
+                  <details><summary>Material y cuidados</summary><p>PLA (ácido poliláctico), un filamento de origen vegetal, biodegradable en condiciones de compostaje industrial. Cuidados: <span class="ph">[CONFIRMAR CON VÖR]</span></p></details>
+                  <details><summary>Medidas</summary><p>Espesor 4 mm. Diámetro y alto: <span class="ph">[CONFIRMAR]</span></p></details>
+                  <details><summary>Envíos y cambios</summary><p><span class="ph">[CONFIRMAR ZONAS Y PLAZOS]</span></p></details>
+                </div>
+              </div>
+            </section>
+
+            <!-- ═══ desde acá: DESCRIPCIÓN DEL PRODUCTO (HTML en el panel, estilos en el motor) ═══ -->
+            <section class="cap apertura">
+              <div class="in">
+                <div>
+                  <p class="k"><span class="pin" data-n="7">7</span> La mesa empieza antes de servir</p>
+                  <h2>Una servilleta doblada ya dice algo.</h2>
+                </div>
+                <div>
+                  <p class="cita">El aro termina la frase.</p>
+                  <p class="p">Lo pensamos como una pieza chica con trabajo de pieza grande: un calado que no se puede hacer con molde, una firma que nace con el diseño y un material que vuelve a la tierra.</p>
+                </div>
+              </div>
+            </section>
+
+            <section class="trazo" id="trazo">
+              <div class="trazo-in">
+                <div class="lamina" id="lamina">
+                  <img src="escena-lapiz.webp" alt="" aria-hidden="true">
+                  <img class="color" src="escena.webp" alt="El mismo aro, del boceto a lápiz a la pieza terminada">
+                  <div class="filo"></div>
+                </div>
+                <div>
+                  <p class="k" style="font:600 11px/1 var(--f-tit);letter-spacing:.3em;text-transform:uppercase;color:var(--suave);margin:0 0 22px"><span class="pin" data-n="8">8</span> Del trazo a la pieza</p>
+                  <div class="pasos">
+                    <div class="paso on" data-p="0"><span class="n">01</span><div><b>Un trazo.</b><p>Dibujamos el calado a mano hasta que la forma se sostiene sola.</p></div></div>
+                    <div class="paso" data-p="1"><span class="n">02</span><div><b>Capa sobre capa.</b><p>La impresora levanta el aro desde la base, con el vacío incluido.</p></div></div>
+                    <div class="paso" data-p="2"><span class="n">03</span><div><b>Tu mesa.</b><p>Sale una pieza de 4 mm, liviana, lista para ordenar la servilleta.</p></div></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="cap">
+              <p class="k"><span class="pin" data-n="9">9</span> Seis calados</p>
+              <h2>Mismo aro. Seis maneras de dejar pasar la luz.</h2>
+              <div class="serie" id="serie"></div>
+            </section>
+
+            <section class="cap momentos">
+              <p class="k"><span class="pin" data-n="13">13</span> Dónde vive</p>
+              <h2>Para las mesas que se recuerdan.</h2>
+              <div class="mom">
+                <figure><img src="escena.webp" alt="Aro Calado con servilleta de lino en una mesa a la luz de la tarde"><figcaption><b>Cuando recibís</b><span>La mesa puesta antes de que lleguen. Cada lugar, con su aro.</span></figcaption></figure>
+                <figure><img src="cat-individuales.webp" alt="Individual calado VÖR con vajilla de cerámica"><figcaption><b>El almuerzo del domingo</b><span>Con el individual del mismo lenguaje, la mesa se arma sola.</span></figcaption></figure>
+                <figure><img src="color-2.webp" alt="Aro Calado Edición Oro" class="cont"><figcaption><b>Para regalar</b><span>Un set con las iniciales de quien lo recibe.</span></figcaption></figure>
+              </div>
+            </section>
+
+            <section class="cap puntos">
+              <p class="k">La pieza, de cerca</p>
+              <h2>Lo que no se ve en la foto chica.</h2>
+              <div class="obj" id="obj">
+                <img id="obj-img" src="aro-4.webp" alt="Aro Calado Panal en color natural">
+                <div class="pt up" style="--x:22%;--y:22%;--h:70px"><i></i><span class="l"></span><span class="r"><b>4 mm</b><small>de espesor en todo el aro</small></span></div>
+                <div class="pt dn" style="--x:50%;--y:58%;--h:96px"><i></i><span class="l"></span><span class="r"><b>Calado impreso</b><small>una geometría que un molde no logra</small></span></div>
+                <div class="pt up" style="--x:80%;--y:30%;--h:52px"><i></i><span class="l"></span><span class="r"><b>PLA vegetal</b><small>biodegradable en compostaje industrial</small></span></div>
+              </div>
+            </section>
+
+            <section class="cap firma">
+              <div class="in">
+                <div>
+                  <p class="k"><span class="pin" data-n="10">10</span> Signature Zone</p>
+                  <h2>La firma se diseña con la pieza.</h2>
+                  <p class="p">No es una etiqueta pegada al final: tus iniciales se graban en el aro, de 6 a 10 mm de alto. Probalas acá.</p>
+                  <div class="ctl"><input id="f-txt" maxlength="3" value="MQ" aria-label="Iniciales de prueba"><button class="btn sec" id="f-usar" style="width:auto;padding:14px 20px">Usar en mi set</button></div>
+                  <p class="alto"><label for="f-alto">Alto de letra</label> <input type="range" id="f-alto" min="6" max="10" step="1" value="8"> <span id="f-mm">8 mm</span></p>
+                </div>
+                <svg class="banda" id="banda" viewBox="0 0 520 300" role="img" aria-label="Vista del grabado sobre el aro">
+                  <defs>
+                    <linearGradient id="gb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CBB9A2"/><stop offset=".5" stop-color="#B8A58C"/><stop offset="1" stop-color="#9C8A73"/></linearGradient>
+                    <filter id="hundido"><feOffset dx="0" dy="1.4"/><feGaussianBlur stdDeviation=".7" result="o"/><feComposite in="SourceGraphic" in2="o" operator="out"/></filter>
+                  </defs>
+                  <ellipse cx="260" cy="250" rx="210" ry="22" fill="#000" opacity=".08"/>
+                  <path d="M60 70 Q260 30 460 70 L460 220 Q260 260 60 220 Z" fill="url(#gb)" id="banda-p"/>
+                  <g fill="#E9E1D3" opacity=".9">
+                    <path d="M85 92 l40 38 -40 38z"/><path d="M435 92 l-40 38 40 38z"/>
+                    <path d="M140 78 l24 24 -24 24 -24 -24z" transform="translate(0,12)"/><path d="M380 78 l24 24 -24 24 -24 -24z" transform="translate(0,12)"/>
+                    <path d="M140 150 l24 24 -24 24 -24 -24z"/><path d="M380 150 l24 24 -24 24 -24 -24z"/>
+                  </g>
+                  <rect x="190" y="104" width="140" height="92" rx="10" fill="#A8957C" opacity=".35"/>
+                  <text id="banda-t" x="260" y="150" text-anchor="middle" dominant-baseline="central" font-family="Montserrat,sans-serif" font-weight="800" font-size="48" letter-spacing="10" fill="#6E5F4C">MQ</text>
+                  <text x="260" y="286" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#6B665E" id="banda-cap">Vista ilustrativa · letra de 8 mm</text>
+                </svg>
+              </div>
+            </section>
+
+            <section class="cap mesa">
+              <div class="in">
+                <div>
+                  <p class="k"><span class="pin" data-n="11">11</span> Armá tu mesa</p>
+                  <h2>En set, como se pone una mesa.</h2>
+                  <p class="p">Elegí para cuántos. Todos los aros del set salen del mismo lote, con el mismo calado y el mismo tono.</p>
+                  <div class="chips" id="sets2" style="margin-top:22px"></div>
+                  <div class="total"><strong id="m-n">Set para 4</strong><span class="ph">[PRECIO DEL SET]</span></div>
+                </div>
+                <div class="tabla"><div class="lugares" id="lugares"></div></div>
+              </div>
+            </section>
+
+            <section class="cap completa">
+              <p class="k"><span class="pin" data-n="14">14</span> Completá la mesa</p>
+              <h2>El mismo lenguaje, en toda la mesa.</h2>
+              <div class="cruz">
+                <a href="#" onclick="return false"><img src="cat-individuales.webp" alt=""><b>Individuales &amp; Posavasos</b><span class="ph">[PRECIO]</span></a>
+                <a href="#" onclick="return false"><img src="cat-servilleteros.webp" alt=""><b>Servilleteros</b><span class="ph">[PRECIO]</span></a>
+                <a href="#" onclick="return false"><img src="cat-tazas.webp" alt=""><b>Tazas de café</b><span class="ph">[PRECIO]</span></a>
+                <a href="#" onclick="return false"><img src="cat-vasos.webp" alt=""><b>Vasos</b><span class="ph">[PRECIO]</span></a>
+              </div>
+            </section>
+
+            <section class="cap cierre-c">
+              <div class="in">
+                <div>
+                  <p class="k"><span class="pin" data-n="15">15</span> Tu set</p>
+                  <h2>Llevá la firma a tu mesa.</h2>
+                  <p class="p" id="cierre-sel">Natural · Rombo · Set para 4</p>
+                </div>
+                <div class="cierre-cta">
+                  <strong><span class="ph">[PRECIO]</span></strong>
+                  <button class="btn claro" id="comprar2">Agregar al carrito</button>
+                  <small>Diseñado e impreso por VÖR · Filamento biodegradable</small>
+                </div>
+              </div>
+            </section>
+
+            <section class="cap faq">
+              <p class="k">Preguntas</p>
+              <h2>Antes de elegir.</h2>
+              <div class="acc">
+                <details><summary>¿De qué está hecho?</summary><p>De PLA (ácido poliláctico), un filamento de origen vegetal. Es biodegradable en condiciones de compostaje industrial.</p></details>
+                <details><summary>¿Cómo funciona el grabado?</summary><p>Elegís "Grabar iniciales", escribís hasta 3 letras y las grabamos en el aro con un alto de 6 a 10 mm. Va igual en todos los aros del set.</p></details>
+                <details><summary>¿Puedo mezclar calados en un set?</summary><p><span class="ph">[CONFIRMAR CON VÖR]</span></p></details>
+                <details><summary>¿Cómo lo cuido?</summary><p><span class="ph">[CONFIRMAR CON VÖR]</span></p></details>
+              </div>
+            </section>
+            <!-- ═══ fin de la descripción ═══ -->
+
+            <footer class="pie"><img src="logo.webp" alt="VÖR Design"></footer>
+
+            <div class="fija" id="fija">
+              <img id="fija-img" src="aro-1.webp" alt="">
+              <div class="t"><b>Aro Calado <span class="pin" data-n="12">12</span></b><small id="fija-t">Natural · Rombo · Set para 4</small></div>
+              <button class="btn" id="fija-btn">Agregar</button>
+            </div>
+</main>
+<script>
+(function(){
+  var $=function(s,c){return (c||document).querySelector(s)}, $$=function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))};
+  var COLORES=[{n:'Natural',c:'#C2AA8E',img:'color-1.webp'},{n:'Edición Oro',c:'linear-gradient(135deg,#E2C46B,#A9842F)',img:'color-2.webp'},{n:'Grafito',c:'#1E1E1E',img:'color-3.webp'},{n:'Hueso',c:'#D9D2C4',img:'color-4.webp'},{n:'Grafito y Oro',c:'linear-gradient(135deg,#1E1E1E 50%,#C9A54A 50%)',img:'color-5.webp'}];
+  var CALADOS=[{n:'Rombo',d:'Diagonales que se cruzan.'},{n:'Onda',d:'Curvas en tensión.'},{n:'Costilla',d:'Líneas verticales, sobrias.'},{n:'Panal',d:'Celdas que dejan pasar más luz.'},{n:'Arco',d:'Un solo arco estructural.'},{n:'Trama',d:'Cruces libres, más orgánico.'}];
+  var SETS=[2,4,6,8,12];
+  var est={color:0,cal:0,set:1,grab:false,ini:''};
+  var foto=$('#foto');
+
+  /* galería */
+  var GAL=[{src:'escena.webp',cont:false,alt:'Aro Calado en la mesa'},{src:'serie.webp',cont:true,alt:'Los seis calados'},{src:'aro-1.webp',cont:true,alt:'Aro Calado Rombo'},{src:'color-2.webp',cont:true,alt:'Edición Oro'}];
+  var mini=$('#miniat');
+  function verFoto(src,cont,alt){foto.style.opacity=0;setTimeout(function(){foto.src=src;foto.alt=alt||'';foto.classList.toggle('cont',!!cont);foto.style.opacity=1},180)}
+  GAL.forEach(function(g,i){var b=document.createElement('button');b.innerHTML='<img src="'+g.src+'" alt="">';b.setAttribute('aria-label',g.alt);if(i===0)b.setAttribute('aria-current','true');b.onclick=function(){$$('button',mini).forEach(function(x){x.removeAttribute('aria-current')});b.setAttribute('aria-current','true');verFoto(g.src,g.cont,g.alt)};mini.appendChild(b)});
+
+  /* color */
+  var sw=$('#sw');
+  COLORES.forEach(function(c,i){var b=document.createElement('button');b.style.background=c.c;b.setAttribute('aria-label',c.n);b.setAttribute('aria-pressed',i===0);b.onclick=function(){est.color=i;$$('button',sw).forEach(function(x,j){x.setAttribute('aria-pressed',j===i)});$('#t-color').textContent=c.n;verFoto(c.img,true,'Aro Calado '+c.n);pintar()};sw.appendChild(b)});
+
+  /* calados (compra + serie) */
+  var cal=$('#cal'), serie=$('#serie');
+  CALADOS.forEach(function(k,i){
+    var b=document.createElement('button');b.innerHTML='<img src="aro-'+(i+1)+'.webp" alt="">';b.setAttribute('aria-label','Calado '+k.n);b.setAttribute('aria-pressed',i===0);b.onclick=function(){elegirCal(i,true)};cal.appendChild(b);
+    var s=document.createElement('button');s.setAttribute('aria-pressed',i===0);s.innerHTML='<div class="img"><img src="aro-'+(i+1)+'.webp" alt="Calado '+k.n+'"></div><b>'+k.n+'</b><small>'+k.d+'</small>';s.onclick=function(){elegirCal(i,true)};serie.appendChild(s);
+  });
+  function elegirCal(i,mostrar){est.cal=i;$$('button',cal).forEach(function(x,j){x.setAttribute('aria-pressed',j===i)});$$('button',serie).forEach(function(x,j){x.setAttribute('aria-pressed',j===i)});$('#t-cal').textContent=CALADOS[i].n;if(mostrar)verFoto('aro-'+(i+1)+'.webp',true,'Aro Calado '+CALADOS[i].n);$('#obj-img').src='aro-'+(i+1)+'.webp';pintar()}
+
+  /* sets (compra + armá tu mesa) */
+  function chips(cont){SETS.forEach(function(n,i){var b=document.createElement('button');b.textContent=n+' personas';b.setAttribute('aria-pressed',i===est.set);b.onclick=function(){est.set=i;pintar()};cont.appendChild(b)})}
+  chips($('#sets'));chips($('#sets2'));
+
+  /* grabado */
+  var gOn=$('#g-on'), gTxt=$('#g-txt'), fTxt=$('#f-txt');
+  gOn.onchange=function(){est.grab=gOn.checked;gTxt.disabled=!gOn.checked;if(gOn.checked&&!gTxt.value){gTxt.value=fTxt.value}est.ini=gTxt.value;pintar()};
+  gTxt.oninput=function(){est.ini=gTxt.value;fTxt.value=gTxt.value;banda();pintar()};
+  fTxt.oninput=banda;
+  $('#f-usar').onclick=function(){gOn.checked=true;gTxt.disabled=false;gTxt.value=fTxt.value;est.grab=true;est.ini=fTxt.value;pintar();window.scrollTo({top:$('.top').getBoundingClientRect().top+scrollY-20,behavior:'smooth'})};
+  var fAlto=$('#f-alto');
+  function banda(){var t=(fTxt.value||'').toUpperCase().slice(0,3)||'—';var mm=+fAlto.value;$('#banda-t').textContent=t;$('#banda-t').setAttribute('font-size',String(30+ (mm-6)*7));$('#f-mm').textContent=mm+' mm';$('#banda-cap').textContent='Vista ilustrativa · letra de '+mm+' mm'}
+  fAlto.oninput=banda; banda();
+
+  /* armá tu mesa */
+  var lug=$('#lugares');
+  function mesa(){var n=SETS[est.set];var cols=n<=4?n:(n<=8?Math.ceil(n/2):6);lug.style.gridTemplateColumns='repeat('+cols+',minmax(0,1fr))';lug.innerHTML='';for(var i=0;i<n;i++){var im=document.createElement('img');im.src='aro-'+(est.cal+1)+'.webp';im.alt='';lug.appendChild(im)}$('#m-n').textContent='Set para '+n}
+
+  function pintar(){
+    $$('#sets button').forEach(function(x,j){x.setAttribute('aria-pressed',j===est.set)});
+    $$('#sets2 button').forEach(function(x,j){x.setAttribute('aria-pressed',j===est.set)});
+    $('#t-set').textContent=SETS[est.set]+' personas';
+    mesa();
+    $('#fija-img').src='aro-'+(est.cal+1)+'.webp';
+    var sel=COLORES[est.color].n+' · '+CALADOS[est.cal].n+' · Set para '+SETS[est.set]+(est.grab&&est.ini?' · '+est.ini.toUpperCase():'')+(cant>1?' · ×'+cant:'');
+    $('#fija-t').textContent=sel; $('#cierre-sel').textContent=sel;
+    $('#p-set').textContent='set para '+SETS[est.set]+(cant>1?' · ×'+cant:'');
+  }
+  var cant=1;
+  $('#c-menos').onclick=function(){cant=Math.max(1,cant-1);$('#c-n').textContent=cant;pintar()};
+  $('#c-mas').onclick=function(){cant=Math.min(20,cant+1);$('#c-n').textContent=cant;pintar()};
+  pintar();
+
+  /* botón: confirmación dentro de la página */
+  function ok(b){var t=b.textContent;b.textContent='Agregado ✓';setTimeout(function(){b.textContent=t},1600)}
+  $('#comprar').onclick=function(){ok(this)};$('#fija-btn').onclick=function(){ok(this)};$('#comprar2').onclick=function(){ok(this)};
+  $('#ahora').onclick=function(){var b=this,t=b.textContent;b.textContent='Ir a pagar →';setTimeout(function(){b.textContent=t},1600)};
+
+  /* scroll dentro del marco: trazo → color y barra fija */
+  var vista=document.scrollingElement, trazo=$('#trazo'), lam=$('#lamina'), pasos=$$('.paso'), fija=$('#fija'), comprar=$('#comprar');
+  var quieto=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function alScroll(){
+    var vh=window.innerHeight, top=trazo.getBoundingClientRect().top, alto=trazo.offsetHeight-vh;
+    var p=Math.max(0,Math.min(1,(-top+vh*0.15)/Math.max(1,alto)));
+    if(quieto)p=1;
+    var corte=Math.max(0,Math.min(100,(1-(p-0.15)/0.7)*100));
+    lam.style.setProperty('--corte',corte+'%');
+    lam.style.setProperty('--filo',(corte>1&&corte<99)?1:0);
+    var paso=p<0.34?0:(p<0.67?1:2);
+    pasos.forEach(function(x,i){x.classList.toggle('on',i<=paso)});
+    var rb=comprar.getBoundingClientRect();
+    fija.classList.toggle('on',rb.bottom<60);
+  }
+  window.addEventListener('scroll',alScroll,{passive:true});window.addEventListener('resize',alScroll);alScroll();
+
+})();
+</script>
+</body></html>
